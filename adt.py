@@ -38,6 +38,13 @@ Bar = NamedTuple('Bar', [])
 Baz = NamedTuple('Baz', [('name', str), ('num', int)])
 Quux = NamedTuple('Quux', [('num', int)])
 
+Sum2 = Union[F1[T1], F2[T2]]
+Sum3 = Union[F1[T1], F2[T2], F3[T3]]
+Sum4 = Union[F1[T1], F2[T2], F3[T3], F4[T4]]
+Sum5 = Union[F1[T1], F2[T2], F3[T3], F4[T4], F5[T5]]
+Sum6 = Union[F1[T1], F2[T2], F3[T3], F4[T4], F5[T5], F6[T6]]
+Sum7 = Union[F1[T1], F2[T2], F3[T3], F4[T4], F5[T5], F6[T6], F7[T7]]
+
 class Fold2(ABC, Generic[T1, T2, Out]):
   @abstractmethod
   def f1(self, f: T1) -> Out: pass
@@ -120,11 +127,17 @@ class FoldPrint(Fold3[Foo, Bar, Union[F1[Baz], F2[Quux]], str]):
   def f3(self, bq: Union[F1[Baz], F2[Quux]]) -> str:
     return FoldPBQ().run(bq)
 
-class FoldP4(Fold4[Foo, Bar, Baz, Quux, Baz]):
-  def f1(self, foo: Foo) -> Baz: return Baz("foo", 1)
-  def f2(self, bar: Bar) -> Baz: return Baz("bar", 2)
-  def f3(self, baz: Baz) -> Baz: return baz
-  def f4(self, quux: Quux) -> Baz: return Baz("quux", quux.num)
+class FoldP4(Fold4[Foo, Bar, Baz, Quux, Sum2[Baz, Quux]]):
+  def f1(self, foo: Foo) -> F1[Baz]: return F1(Baz("foo", 1))
+  def f2(self, bar: Bar) -> F2[Quux]: return F2(Quux(2))
+  def f3(self, baz: Baz) -> F1[Baz]: return F1(baz)
+  def f4(self, quux: Quux) -> F1[Baz]: return F1(Baz("quux", quux.num))
+
+# This could be super generic
+# need ergonomics for inline spec to avoid exponential defs
+class FoldBQ(Fold2[Baz, Quux, Sum4[Foo, Bar, Baz, Quux]]):
+  def f1(self, baz: Baz) -> F3[Baz]: return F3(baz)
+  def f2(self, quux: Quux) -> F4[Quux]: return F4(quux)
 
 class FoldLen(Fold3[Foo, Bar, Baz, int]):
   def f1(self, foo: Foo) -> int: return 1
@@ -137,6 +150,7 @@ print(FoldPrint().run(F1(Foo())))
 print(FoldPrint().run(F3(F1(Baz('bazzz', 3)))))
 
 print(FoldP4().run(F1(Foo())))
+print(FoldP4().run(FoldBQ().run(FoldP4().run(F2(Bar())))))
 print(FoldP4().run(F4(Quux(7))))
 
 print(FoldLen().run(F1(Foo())))
