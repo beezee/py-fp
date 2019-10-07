@@ -51,7 +51,7 @@ class Fold2(ABC, Generic[T1, T2, Out]):
   @abstractmethod
   def f2(self, f: T2) -> Out: pass
 
-  def run(self, d: Union[F1[T1], F2[T2]]) -> Out:
+  def run(self, d: Sum2[T1, T2]) -> Out:
     if isinstance(d, F1): 
       return self.f1(d.run)
     elif isinstance(d, F2): 
@@ -62,7 +62,7 @@ class Fold3(Fold2[T1, T2, Out], Generic[T1, T2, T3, Out]):
   @abstractmethod
   def f3(self, f: T3) -> Out: pass
 
-  def run(self, d: Union[F1[T1], F2[T2], F3[T3]]) -> Out:
+  def run(self, d: Sum3[T1, T2, T3]) -> Out:
     if isinstance(d, F3): 
       return self.f3(d.run)
     else: 
@@ -72,7 +72,7 @@ class Fold4(Fold3[T1, T2, T3, Out], Generic[T1, T2, T3, T4, Out]):
   @abstractmethod
   def f4(self, f: T4) -> Out: pass
 
-  def run(self, d: Union[F1[T1], F2[T2], F3[T3], F4[T4]]) -> Out:
+  def run(self, d: Sum4[T1, T2, T3, T4]) -> Out:
     if isinstance(d, F4): 
       return self.f4(d.run)
     else: 
@@ -82,7 +82,7 @@ class Fold5(Fold4[T1, T2, T3, T4, Out], Generic[T1, T2, T3, T4, T5, Out]):
   @abstractmethod
   def f5(self, f: T5) -> Out: pass
 
-  def run(self, d: Union[F1[T1], F2[T2], F3[T3], F4[T4], F5[T5]]) -> Out:
+  def run(self, d: Sum5[T1, T2, T3, T4, T5]) -> Out:
     if isinstance(d, F5): 
       return self.f5(d.run)
     else: 
@@ -93,9 +93,7 @@ class Fold6(Fold5[T1, T2, T3, T4, T5, Out],
   @abstractmethod
   def f6(self, f: T6) -> Out: pass
 
-  def run(self, 
-          d: Union[F1[T1], F2[T2], F3[T3], 
-                   F4[T4], F5[T5], F6[T6]]) -> Out:
+  def run(self, d: Sum6[T1, T2, T3, T4, T5, T6]) -> Out:
     if isinstance(d, F6): 
       return self.f6(d.run)
     else: 
@@ -106,10 +104,7 @@ class Fold7(Fold6[T1, T2, T3, T4, T5, T6, Out],
   @abstractmethod
   def f7(self, f: T7) -> Out: pass
 
-  def run(self, 
-          d: Union[F1[T1], F2[T2], F3[T3], 
-                   F4[T4], F5[T5], F6[T6],
-                   F7[T7]]) -> Out:
+  def run(self, d: Sum7[T1, T2, T3, T4, T5, T6, T7]) -> Out:
     if isinstance(d, F7): 
       return self.f7(d.run)
     else: 
