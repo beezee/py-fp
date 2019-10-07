@@ -35,22 +35,15 @@ class Fold2(ABC, Generic[T1, T2, Out]):
       return self.f2(d.run)
     else: assert False
 
-class Fold3(ABC, Generic[T1, T2, T3, Out]):
-  @abstractmethod
-  def f1(self, f: T1) -> Out: pass
-  @abstractmethod
-  def f2(self, f: T2) -> Out: pass
+class Fold3(Fold2[T1, T2, Out], Generic[T1, T2, T3, Out]):
   @abstractmethod
   def f3(self, f: T3) -> Out: pass
 
   def run(self, d: Union[F1[T1], F2[T2], F3[T3]]) -> Out:
-    if isinstance(d, F1): 
-      return self.f1(d.run)
-    elif isinstance(d, F2): 
-      return self.f2(d.run)
-    elif isinstance(d, F3): 
+    if isinstance(d, F3): 
       return self.f3(d.run)
-    else: assert False
+    else: 
+      return super().run(d)
 
 class FoldPBQ(Fold2[Baz, Quux, str]):
   def f1(self, baz: Baz) -> str:
