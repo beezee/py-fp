@@ -45,6 +45,37 @@ Sum5 = Union[F1[T1], F2[T2], F3[T3], F4[T4], F5[T5]]
 Sum6 = Union[F1[T1], F2[T2], F3[T3], F4[T4], F5[T5], F6[T6]]
 Sum7 = Union[F1[T1], F2[T2], F3[T3], F4[T4], F5[T5], F6[T6], F7[T7]]
 
+class Fld2(Generic[T1, T2, Out]):
+
+  def f1(self, f: T1) -> Out: return self._f1(f)
+  def f2(self, f: T2) -> Out: return self._f2(f)
+
+  def __init__(self, _f1: Callable[[T1], Out], _f2: Callable[[T2], Out]):
+    self._f1 = _f1
+    self._f2 = _f2
+
+  def run(self, d: Sum2[T1, T2]) -> Out:
+    if isinstance(d, F1): 
+      return self.f1(d.run)
+    elif isinstance(d, F2): 
+      return self.f2(d.run)
+    else: assert False
+
+class Fld3(Fld2[T1, T2, Out], Generic[T1, T2, T3, Out]):
+
+  def f3(self, f: T3) -> Out: return self._f3(f)
+
+  def __init(self, _f1: Callable[[T1], Out], _f2: Callable[[T2], Out],
+             _f3: Callable[[T3], Out]):
+    self._f3 = _f3
+    super().__init__(_f1, _f2)
+
+  def run(self, d: Sum3[T1, T2, T3]) -> Out:
+    if isinstance(d, F3): 
+      return self.f3(d.run)
+    else: 
+      return super().run(d)
+
 class Fold2(ABC, Generic[T1, T2, Out]):
   @abstractmethod
   def f1(self, f: T1) -> Out: pass
@@ -128,11 +159,10 @@ class FoldP4(Fold4[Foo, Bar, Baz, Quux, Sum2[Baz, Quux]]):
   def f3(self, baz: Baz) -> F1[Baz]: return F1(baz)
   def f4(self, quux: Quux) -> F1[Baz]: return F1(Baz("quux", quux.num))
 
-# This could be super generic
-# need ergonomics for inline spec to avoid exponential defs
-class FoldBQ(Fold2[Baz, Quux, Sum4[Foo, Bar, Baz, Quux]]):
-  def f1(self, baz: Baz) -> F3[Baz]: return F3(baz)
-  def f2(self, quux: Quux) -> F4[Quux]: return F4(quux)
+# there are too many of these to define. where to put? how to discover?
+class F12to34(Fold2[T1, T2, Sum4[T3, T4, T1, T2]], Generic[T1, T2, T3, T4]):
+  def f1(self, t1: T1) -> F3[T1]: return F3(t1)
+  def f2(self, t2: T2) -> F4[T2]: return F4(t2)
 
 class FoldLen(Fold3[Foo, Bar, Baz, int]):
   def f1(self, foo: Foo) -> int: return 1
@@ -145,7 +175,7 @@ print(FoldPrint().run(F1(Foo())))
 print(FoldPrint().run(F3(F1(Baz('bazzz', 3)))))
 
 print(FoldP4().run(F1(Foo())))
-print(FoldP4().run(FoldBQ().run(FoldP4().run(F2(Bar())))))
+print(FoldP4().run(F12to34[Baz, Quux, Foo, Bar]().run(FoldP4().run(F2(Bar())))))
 print(FoldP4().run(F4(Quux(7))))
 
 print(FoldLen().run(F1(Foo())))
