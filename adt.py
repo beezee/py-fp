@@ -45,37 +45,6 @@ Sum5 = Union[F1[T1], F2[T2], F3[T3], F4[T4], F5[T5]]
 Sum6 = Union[F1[T1], F2[T2], F3[T3], F4[T4], F5[T5], F6[T6]]
 Sum7 = Union[F1[T1], F2[T2], F3[T3], F4[T4], F5[T5], F6[T6], F7[T7]]
 
-class Fld2(Generic[T1, T2, Out]):
-
-  def f1(self, f: T1) -> Out: return self._f1(f)
-  def f2(self, f: T2) -> Out: return self._f2(f)
-
-  def __init__(self, _f1: Callable[[T1], Out], _f2: Callable[[T2], Out]):
-    self._f1 = _f1
-    self._f2 = _f2
-
-  def run(self, d: Sum2[T1, T2]) -> Out:
-    if isinstance(d, F1): 
-      return self.f1(d.run)
-    elif isinstance(d, F2): 
-      return self.f2(d.run)
-    else: assert False
-
-class Fld3(Fld2[T1, T2, Out], Generic[T1, T2, T3, Out]):
-
-  def f3(self, f: T3) -> Out: return self._f3(f)
-
-  def __init(self, _f1: Callable[[T1], Out], _f2: Callable[[T2], Out],
-             _f3: Callable[[T3], Out]):
-    self._f3 = _f3
-    super().__init__(_f1, _f2)
-
-  def run(self, d: Sum3[T1, T2, T3]) -> Out:
-    if isinstance(d, F3): 
-      return self.f3(d.run)
-    else: 
-      return super().run(d)
-
 class Fold2(ABC, Generic[T1, T2, Out]):
   @abstractmethod
   def f1(self, f: T1) -> Out: pass
