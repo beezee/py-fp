@@ -120,6 +120,12 @@ class FoldPrint(Fold3[Foo, Bar, Union[F1[Baz], F2[Quux]], str]):
   def f3(self, bq: Union[F1[Baz], F2[Quux]]) -> str:
     return FoldPBQ().run(bq)
 
+class FoldP4(Fold4[Foo, Bar, Baz, Quux, Baz]):
+  def f1(self, foo: Foo) -> Baz: return Baz("foo", 1)
+  def f2(self, bar: Bar) -> Baz: return Baz("bar", 2)
+  def f3(self, baz: Baz) -> Baz: return baz
+  def f4(self, quux: Quux) -> Baz: return Baz("quux", quux.num)
+
 class FoldLen(Fold3[Foo, Bar, Baz, int]):
   def f1(self, foo: Foo) -> int: return 1
   def f2(self, bar: Bar) -> int: return 2
@@ -127,8 +133,11 @@ class FoldLen(Fold3[Foo, Bar, Baz, int]):
     return len(baz.name) * baz.num
 
 print(FoldPrint().run(F1(Foo())))
-#print(FoldPrint().run(R('baz')))
+#print(FoldPrint().run(F3('baz')))
 print(FoldPrint().run(F3(F1(Baz('bazzz', 3)))))
+
+print(FoldP4().run(F1(Foo())))
+print(FoldP4().run(F4(Quux(7))))
 
 print(FoldLen().run(F1(Foo())))
 print(FoldLen().run(F3(Baz('bazzz', 3))))
