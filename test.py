@@ -15,11 +15,11 @@ class FoldAdt(ABC, Generic[T]):
   @abstractmethod
   def baz(self, name: str, num: int) -> T: pass
 
-def test(d: Union[Foo, Bar, Baz], t: FoldAdt[T]) -> T:
-  if isinstance(d, Foo): return t.foo()
-  elif isinstance(d, Bar): return t.bar()
-  elif isinstance(d, Baz): return t.baz(d.name, d.num)
-  else: assert False
+  def run(self, d: Union[Foo, Bar, Baz]) -> T:
+    if isinstance(d, Foo): return self.foo()
+    elif isinstance(d, Bar): return self.bar()
+    elif isinstance(d, Baz): return self.baz(d.name, d.num)
+    else: assert False
 
 class FoldPrint(FoldAdt):
   def foo(self) -> str: return 'foo'
@@ -33,8 +33,8 @@ class FoldLen(FoldAdt):
   def baz(self, name: str, num: int) -> int:
     return len(name) * num
 
-print(test(Foo(), FoldPrint()))
-print(test(Baz('bazzz', 3), FoldPrint()))
+print(FoldPrint().run(Foo()))
+print(FoldPrint().run(Baz('bazzz', 3)))
 
-print(test(Foo(), FoldLen()))
-print(test(Baz('bazzz', 3), FoldLen()))
+print(FoldLen().run(Foo()))
+print(FoldLen().run(Baz('bazzz', 3)))
