@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from category import Compose
+from category import Compose, Id
 from dataclasses import dataclass
 from typing import Callable, TypeVar, Generic, NamedTuple, Union
 
@@ -151,7 +151,9 @@ print(FoldPrint()(F1(Foo())))
 print(FoldPrint()(F3(F1(Baz('bazzz', 3)))))
 
 print(FoldP4()(F1(Foo())))
-print(Compose(FoldP4(), F12to34[Baz, Quux, Foo, Bar]())(F2(Bar())))
+print(Compose(
+  Compose(Id[Sum4[Foo, Bar, Baz, Quux]](), FoldP4()), 
+  F12to34[Baz, Quux, Foo, Bar]())(F2(Bar())))
 print(Compose(FoldP4(), 
   Compose(F12to34[Baz, Quux, Foo, Bar](), FoldLen()))(F2(Bar())))
 print(FoldP4()(F4(Quux(7))))

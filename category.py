@@ -12,3 +12,6 @@ class Compose(Generic[T1, T2, T3]):
   def __call__(self, t1: T1) -> T3:
     return self.f2(self.f1(t1))
 
+class Id(Generic[T1]):
+  def __call__(self, t1: T1) -> T1:
+    return t1
