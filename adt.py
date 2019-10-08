@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from category import Compose
 from dataclasses import dataclass
 from typing import Callable, TypeVar, Generic, NamedTuple, Union
 
@@ -136,20 +137,14 @@ class F12to34(Fold2[T1, T2, Sum4[T3, T4, T1, T2]], Generic[T1, T2, T3, T4]):
   def f1(self, t1: T1) -> F3[T1]: return F3(t1)
   def f2(self, t2: T2) -> F4[T2]: return F4(t2)
 
-class FoldLen(Fold3[Foo, Bar, Baz, int]):
+class FoldLen(Fold4[Foo, Bar, Baz, Quux, int]):
   def f1(self, foo: Foo) -> int: return 1
   def f2(self, bar: Bar) -> int: return 2
   def f3(self, baz: Baz) -> int:
     return len(baz.name) * baz.num
+  def f4(self, quux: Quux) -> int:
+    return quux.num
 
-
-class Compose(Generic[T1, T2, T3]):
-  def __init__(self, f1: Callable[[T1], T2], f2: Callable[[T2], T3]):
-    self.f1 = f1
-    self.f2 = f2
-
-  def __call__(self, t1: T1) -> T3:
-    return self.f2(self.f1(t1))
 
 print(FoldPrint()(F1(Foo())))
 #print(FoldPrint()(F3('baz')))
@@ -157,6 +152,8 @@ print(FoldPrint()(F3(F1(Baz('bazzz', 3)))))
 
 print(FoldP4()(F1(Foo())))
 print(Compose(FoldP4(), F12to34[Baz, Quux, Foo, Bar]())(F2(Bar())))
+print(Compose(FoldP4(), 
+  Compose(F12to34[Baz, Quux, Foo, Bar](), FoldLen()))(F2(Bar())))
 print(FoldP4()(F4(Quux(7))))
 
 print(FoldLen()(F1(Foo())))
