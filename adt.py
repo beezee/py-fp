@@ -163,10 +163,13 @@ print(FoldPrint()(F3(F1(Baz('bazzz', 3)))))
 print(FoldP4()(F1(Foo())))
 print(ListF().fmap(Compose(
   Compose(Id[Sum4[Foo, Bar, Baz, Quux]](), FoldP4()), 
-  F12to34[Baz, Quux, Foo, Bar]()))([F2(Bar())]))
+  F12to34[Baz, Quux, Foo, Bar]()))([F2(Bar()), F3(Baz("hi", 3))]))
 print(MaybeF().fmap(Compose(
   Compose(Id[Sum4[Foo, Bar, Baz, Quux]](), FoldP4()), 
   F12to34[Baz, Quux, Foo, Bar]()))(F2(F2(Bar()))))
+print(MaybeF().fmap(Compose(
+  Compose(Id[Sum4[Foo, Bar, Baz, Quux]](), FoldP4()), 
+  F12to34[Baz, Quux, Foo, Bar]()))(F1(None)))
 print(Compose(FoldP4(), 
   Compose(F12to34[Baz, Quux, Foo, Bar](), FoldLen()))(F2(Bar())))
 print(FoldP4()(F4(Quux(7))))
