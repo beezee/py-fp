@@ -1,5 +1,6 @@
 import adt
 from adt import F1, F2, F3, F4
+from arrow import Product
 from category import Compose, Id
 from data import ListF, MaybeF
 from typing import Generic, NamedTuple, TypeVar
@@ -77,3 +78,4 @@ print(FoldP4()(F4(Quux(7))))
 
 print(FoldLen()(F1(Foo())))
 print(FoldLen()(F3(Baz('bazzz', 3))))
+print(Product(len, Compose(lambda x: x + 1, len))(('foo', 'bar')))
