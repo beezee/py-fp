@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 from category import Compose, Id
 from dataclasses import dataclass
-from typing import Callable, TypeVar, Generic, NamedTuple, Union
+from functor import Functor, ListF
+from typing import Callable, TypeVar, Generic, List, NamedTuple, Union
 
 T1 = TypeVar('T1')
 T2 = TypeVar('T2')
@@ -113,6 +114,7 @@ Quux = NamedTuple('Quux', [('num', int)])
 
 FBBQ = Sum4[Foo, Bar, Baz, Quux]
 BQ = Sum2[Baz, Quux]
+Maybe = Sum2[None, T1]
 
 class FoldPBQ(Fold2[Baz, Quux, str]):
   def f1(self, baz: Baz) -> str:
@@ -145,15 +147,26 @@ class FoldLen(Fold4[Foo, Bar, Baz, Quux, int]):
   def f4(self, quux: Quux) -> int:
     return quux.num
 
+class MaybeF(Functor):
+  def fmap(self, c: Callable[[T1], T2]) -> Callable[[Maybe[T1]], Maybe[T2]]:
+    def run(m: Maybe[T1]):
+      if m.run is not None:
+        return F2(c(m.run))
+      else:
+        return F1(None)
+    return run
 
 print(FoldPrint()(F1(Foo())))
 #print(FoldPrint()(F3('baz')))
 print(FoldPrint()(F3(F1(Baz('bazzz', 3)))))
 
 print(FoldP4()(F1(Foo())))
-print(Compose(
+print(ListF().fmap(Compose(
   Compose(Id[Sum4[Foo, Bar, Baz, Quux]](), FoldP4()), 
-  F12to34[Baz, Quux, Foo, Bar]())(F2(Bar())))
+  F12to34[Baz, Quux, Foo, Bar]()))([F2(Bar())]))
+print(MaybeF().fmap(Compose(
+  Compose(Id[Sum4[Foo, Bar, Baz, Quux]](), FoldP4()), 
+  F12to34[Baz, Quux, Foo, Bar]()))(F2(F2(Bar()))))
 print(Compose(FoldP4(), 
   Compose(F12to34[Baz, Quux, Foo, Bar](), FoldLen()))(F2(Bar())))
 print(FoldP4()(F4(Quux(7))))
